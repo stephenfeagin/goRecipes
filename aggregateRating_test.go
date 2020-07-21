@@ -5,7 +5,8 @@ import (
 	"testing"
 )
 
-var rawRatingBareNumbers json.RawMessage = []byte(`
+func TestAggregateRating(t *testing.T) {
+	var rawRatingBareNumbers json.RawMessage = []byte(`
 {
 	"@type": "AggregateRating",
 	"ratingValue": 4.25,
@@ -16,7 +17,7 @@ var rawRatingBareNumbers json.RawMessage = []byte(`
 }
 `)
 
-var rawRatingStringNumbers json.RawMessage = []byte(`
+	var rawRatingStringNumbers json.RawMessage = []byte(`
 {
 	"@type": "AggregateRating",
 	"ratingValue": "4.25",
@@ -27,16 +28,14 @@ var rawRatingStringNumbers json.RawMessage = []byte(`
 }
 `)
 
-var want = aggregateRating{
-	Type:         "AggregateRating",
-	RatingValue:  4.25,
-	RatingCount:  100,
-	ItemReviewed: "RecipeName",
-	BestRating:   5,
-	WorstRating:  1,
-}
-
-func TestAggregateRating(t *testing.T) {
+	var want = aggregateRating{
+		Type:         "AggregateRating",
+		RatingValue:  4.25,
+		RatingCount:  100,
+		ItemReviewed: "RecipeName",
+		BestRating:   5,
+		WorstRating:  1,
+	}
 	tests := map[string]json.RawMessage{
 		"bareNumbers":   rawRatingBareNumbers,
 		"stringNumbers": rawRatingStringNumbers,

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"reflect"
 	"testing"
 )
 
@@ -30,7 +31,7 @@ func TestParseImageJSON(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if *got != want {
+			if !reflect.DeepEqual(*got, want) {
 				t.Fatal("incorrectly processed Image")
 			}
 		})

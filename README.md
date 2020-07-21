@@ -23,7 +23,7 @@ data in HTML microdata.
     - [x] Create valid `DatePublished` field
 	- Parse into a `time.Time`
 	- May or may not have TZ info, which may have to be inferred/imputed
-    - [ ] Create valid `RecipeCategory` field
+    - [x] Create valid `RecipeCategory` field
 	- May be input as a string or as a JSON array
     - [ ] Create valid `RecipeCuisine` field
 	- May be input as a string or as a JSON array

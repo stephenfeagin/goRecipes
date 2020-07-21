@@ -20,7 +20,7 @@ data in HTML microdata.
 	- Involves accommodating number fields input as either strings or JSON numbers
     - [x] Create valid `nutrition` struct
 	- Involves accommodating JSON object (empty or not) or an empty string or array
-    - [ ] Create valid `DatePublished` field
+    - [x] Create valid `DatePublished` field
 	- Parse into a `time.Time`
 	- May or may not have TZ info, which may have to be inferred/imputed
     - [ ] Create valid `RecipeCategory` field

@@ -18,7 +18,7 @@ data in HTML microdata.
 	- Still need to accommodate multiple image URLs
     - [x] Create valid `aggregateRating` struct
 	- Involves accommodating number fields input as either strings or JSON numbers
-    - [ ] Create valid `nutrition` struct
+    - [x] Create valid `nutrition` struct
 	- Involves accommodating JSON object (empty or not) or an empty string or array
     - [ ] Create valid `DatePublished` field
 	- Parse into a `time.Time`

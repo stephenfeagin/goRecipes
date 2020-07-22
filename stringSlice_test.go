@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestParseRecipeCategoryJSON(t *testing.T) {
+func TestParseStringSliceJSON(t *testing.T) {
 	var (
 		jsonArray      json.RawMessage = []byte(`["vegetarian","dinner"]`)
 		stringSingle   json.RawMessage = []byte("vegetarian")
@@ -24,7 +24,7 @@ func TestParseRecipeCategoryJSON(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got, err := parseRecipeCategoryFromJSON(&test.input)
+			got, err := parseStringSliceFromJSON(&test.input)
 			if err != nil {
 				t.Fatal(err)
 			}

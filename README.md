@@ -25,7 +25,7 @@ data in HTML microdata.
 	- May or may not have TZ info, which may have to be inferred/imputed
     - [x] Create valid `RecipeCategory` field
 	- May be input as a string or as a JSON array
-    - [ ] Create valid `RecipeCuisine` field
+    - [x] Create valid `RecipeCuisine` field
 	- May be input as a string or as a JSON array
 - [ ] Parse `rawRecipe` into `Recipe` from HTML microdata
 

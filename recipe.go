@@ -14,7 +14,7 @@ type rawRecipe struct {
 	MainEntityOfPage   string               `json:"mainEntityOfPage"` // URL
 	Name               string               `json:"name"`
 	Image              *json.RawMessage     `json:"image"`         // may be a @type:ImageObject, may be just a URL
-	DatePublished      *json.RawMessage     `json:"datePublished"` // 2019-04-02T06:49:59.000Z -- may be compatible with time.Time, may not be
+	DatePublished      string               `json:"datePublished"` // 2019-04-02T06:49:59.000Z -- may be compatible with time.Time, may not be
 	Description        string               `json:"description"`
 	PrepTime           string               `json:"prepTime"` // PT20M -- 20 minutes
 	CookTime           string               `json:"cookTime"`
@@ -25,7 +25,7 @@ type rawRecipe struct {
 	RecipeCategory     *json.RawMessage     `json:"recipeCategory"` // may be a single string, may be a []string
 	RecipeCuisine      *json.RawMessage     `json:"recipeCuisine"`  // may be a single string, may be a []string
 	Author             *author              `json:"author"`
-	AggregateRating    *rawAggregateRating  `json:"aggregateRating"`
+	AggregateRating    *json.RawMessage     `json:"aggregateRating"`
 	Nutrition          *json.RawMessage     `json:"nutrition"`
 }
 
@@ -55,7 +55,7 @@ type Recipe struct {
 // processRawRecipe calls functions to fully process all of the *json.RawMessage fields in the
 // rawRecipe struct to create a Recipe struct
 func processRawRecipe(raw *rawRecipe) (*Recipe, error) {
-	// the fields that need explicit conversion are Image, DatePublished, RecipeCateogory,
+	// the fields that need explicit conversion are Image, DatePublished, RecipeCategory,
 	// RecipeCuisine, AggregateRating, and Nutrition
 	recipe := &Recipe{}
 
@@ -78,6 +78,41 @@ func processRawRecipe(raw *rawRecipe) (*Recipe, error) {
 		return nil, err
 	}
 	recipe.Image = img
+
+	// DatePublished
+	date, err := parseDatePublishedFromJSON(raw.DatePublished)
+	if err != nil {
+		return nil, err
+	}
+	recipe.DatePublished = date
+
+	// RecipeCategory
+	cats, err := parseStringSliceFromJSON(raw.RecipeCategory)
+	if err != nil {
+		return nil, err
+	}
+	recipe.RecipeCategory = cats
+
+	// RecipeCuisine
+	cuisine, err := parseStringSliceFromJSON(raw.RecipeCuisine)
+	if err != nil {
+		return nil, err
+	}
+	recipe.RecipeCuisine = cuisine
+
+	// AggregateRating
+	rating, err := processAggregateRatingFromJSON(raw.AggregateRating)
+	if err != nil {
+		return nil, err
+	}
+	recipe.AggregateRating = rating
+
+	// Nutrition
+	nutrition, err := processNutritionFromJSON(raw.Nutrition)
+	if err != nil {
+		return nil, err
+	}
+	recipe.Nutrition = nutrition
 
 	return nil, nil
 }

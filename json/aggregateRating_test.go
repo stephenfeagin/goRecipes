@@ -28,7 +28,7 @@ func TestAggregateRating(t *testing.T) {
 }
 `)
 
-	var want = aggregateRating{
+	var want = AggregateRating{
 		Type:         "AggregateRating",
 		RatingValue:  4.25,
 		RatingCount:  100,

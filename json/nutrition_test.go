@@ -29,8 +29,8 @@ func TestParseNutritionJSON(t *testing.T) {
     `)
 	)
 
-	emptyStruct := nutrition{}
-	completeStruct := nutrition{
+	emptyStruct := Nutrition{}
+	completeStruct := Nutrition{
 		Type:                  "NutritionInformation",
 		Calories:              "233 calories",
 		CarbohydrateContent:   "2.4 g",
@@ -48,7 +48,7 @@ func TestParseNutritionJSON(t *testing.T) {
 	tests := []struct {
 		name  string
 		input json.RawMessage
-		want  nutrition
+		want  Nutrition
 	}{
 		{"Empty String", emptyString, emptyStruct},
 		{"Empty JSON Object", emptyJSONObject, emptyStruct},

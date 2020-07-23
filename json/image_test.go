@@ -17,7 +17,7 @@ func TestParseImageJSON(t *testing.T) {
                         "caption": null
 		}
 	`)
-	want := image{
+	want := Image{
 		Type: "ImageObject",
 		URL:  "https://blah.com/img.jpeg",
 	}

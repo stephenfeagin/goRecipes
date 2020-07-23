@@ -6,9 +6,9 @@ import (
 	"fmt"
 )
 
-// image defines the data for a schema.org Image. It only includes fields that are frequently
+// Image defines the data for a schema.org Image. It only includes fields that are frequently
 // included in Recipe models
-type image struct {
+type Image struct {
 	Type    string `json:"@type"` // should be ImageObject
 	URL     string `json:"url"`
 	Width   string `json:"width"`
@@ -18,10 +18,10 @@ type image struct {
 
 // processRawImageFromJSON turns a *json.RawMessage into an Image struct. The RawMessage will either be a
 // plain URL string or an actual ImageObject JSON representation according to schema.org
-func processRawImageFromJSON(raw *json.RawMessage) (*image, error) {
+func processRawImageFromJSON(raw *json.RawMessage) (*Image, error) {
 
 	// first try to unmarshal into an Image struct
-	img := &image{}
+	img := &Image{}
 	err := json.Unmarshal(*raw, img)
 	if err == nil {
 		return img, nil

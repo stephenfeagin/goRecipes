@@ -6,11 +6,33 @@ import (
 	"strconv"
 )
 
-func processAggregateRatingFromJSON(raw *json.RawMessage) (*aggregateRating, error) {
+// AggregateRating defines the data for a schema.org AggregateRating object. It only includes fields
+// that are commonly used in the schema.org Recipe object.
+type AggregateRating struct {
+	Type         string  `json:"@type"` // AggregateRating
+	RatingValue  float64 `json:"ratingValue"`
+	RatingCount  int     `json:"ratingCount"`
+	ItemReviewed string  `json:"itemReviewed"` // should match allRecipes.Name
+	BestRating   int     `json:"bestRating"`
+	WorstRating  int     `json:"worstRating"`
+}
+
+// rawAggregateRating is a more flexible representation of a schema.org AggregateRating object. It
+// allows for number fields to be in string form.
+type rawAggregateRating struct {
+	Type         string           `json:"@type"` // AggregateRating
+	RatingValue  *json.RawMessage `json:"ratingValue"`
+	RatingCount  *json.RawMessage `json:"ratingCount"`
+	ItemReviewed string           `json:"itemReviewed"` // should match allRecipes.Name
+	BestRating   *json.RawMessage `json:"bestRating"`
+	WorstRating  *json.RawMessage `json:"worstRating"`
+}
+
+func processAggregateRatingFromJSON(raw *json.RawMessage) (*AggregateRating, error) {
 	// initialize a json.SyntaxError var for error checking
 	var syntaxError *json.SyntaxError
 
-	agr := &aggregateRating{}
+	agr := &AggregateRating{}
 	// Try to unmarshal into an aggregateRating struct
 	if err := json.Unmarshal(*raw, agr); err == nil {
 		return agr, nil

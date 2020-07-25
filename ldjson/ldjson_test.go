@@ -1,12 +1,13 @@
 package ldjson
 
 import (
-	"log"
 	"os"
 	"testing"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
-var inputFiles = map[string]string{
+var testInputFiles = map[string]string{
 	"Food Network":    "testdata/foodnetwork-ginger-salmon.html",
 	"AllRecipes":      "testdata/allrecipes-turkey-burgers.html",
 	"BonAppetit":      "testdata/bonappetit-brown-butter-peach-cobbler.html",
@@ -15,8 +16,8 @@ var inputFiles = map[string]string{
 	"Kitchn":          "testdata/kitchn-strawberry-shortcake.html",
 }
 
-func TestRetrieveSchemaJSONSelection(t *testing.T) {
-	for name, input := range inputFiles {
+func TestRetrieveSelection(t *testing.T) {
+	for name, input := range testInputFiles {
 		t.Run(name, func(t *testing.T) {
 			f, err := os.Open(input)
 			if err != nil {
@@ -24,7 +25,12 @@ func TestRetrieveSchemaJSONSelection(t *testing.T) {
 			}
 			defer f.Close()
 
-			if _, err = retrieveSchemaJSONSelection(f); err != nil {
+			doc, err := goquery.NewDocumentFromReader(f)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err = retrieveSelection(doc); err != nil {
 				t.Fatal(err)
 			}
 		})
@@ -32,8 +38,7 @@ func TestRetrieveSchemaJSONSelection(t *testing.T) {
 }
 
 func TestExtractRecipe(t *testing.T) {
-	log.SetFlags(log.Lshortfile)
-	for name, input := range inputFiles {
+	for name, input := range testInputFiles {
 		t.Run(name, func(t *testing.T) {
 
 			f, err := os.Open(input)
@@ -42,7 +47,12 @@ func TestExtractRecipe(t *testing.T) {
 			}
 			defer f.Close()
 
-			ldJSON, err := retrieveSchemaJSONSelection(f)
+			doc, err := goquery.NewDocumentFromReader(f)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			ldJSON, err := retrieveSelection(doc)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -55,7 +65,7 @@ func TestExtractRecipe(t *testing.T) {
 }
 
 func BenchmarkExtractRecipe(b *testing.B) {
-	for name, input := range inputFiles {
+	for name, input := range testInputFiles {
 		b.Run(name, func(b *testing.B) {
 			f, err := os.Open(input)
 			if err != nil {
@@ -63,7 +73,12 @@ func BenchmarkExtractRecipe(b *testing.B) {
 			}
 			defer f.Close()
 
-			ldJSON, err := retrieveSchemaJSONSelection(f)
+			doc, err := goquery.NewDocumentFromReader(f)
+			if err != nil {
+				b.Fatal(err)
+			}
+
+			ldJSON, err := retrieveSelection(doc)
 			if err != nil {
 				b.Fatal(err)
 			}

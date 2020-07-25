@@ -1,4 +1,4 @@
-package goRecipes
+package kitchenbox
 
 import (
 	"time"

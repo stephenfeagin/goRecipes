@@ -5,19 +5,19 @@ import (
 	"strings"
 )
 
-// parseStringSliceFromJSON converts a json.RawMessage, which could be either a string or an array of strings,
-// possibly empty, into a Go []string.
-func parseStringSliceFromJSON(raw *json.RawMessage) ([]string, error) {
+// unmarshalToStringSlice converts a json.RawMessage, which could be either a string or an array of
+// strings, possibly empty, into a Go []string.
+func unmarshalToStringSlice(raw *json.RawMessage) ([]string, error) {
 	// try to unmarshal into a string slice
-	var catSlice []string
-	if err := json.Unmarshal(*raw, &catSlice); err == nil {
-		return catSlice, nil
+	var slc []string
+	if err := json.Unmarshal(*raw, &slc); err == nil {
+		return slc, nil
 	}
 	// if not successful, cast to string and separate by commas
-	catString := string(*raw)
-	if catString == "" || catString == `""` {
-		return catSlice, nil
+	str := string(*raw)
+	if str == "" || str == `""` {
+		return slc, nil
 	}
-	catSlice = strings.Split(catString, ",")
-	return catSlice, nil
+	slc = strings.Split(str, ",")
+	return slc, nil
 }

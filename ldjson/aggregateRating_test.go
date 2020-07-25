@@ -3,32 +3,36 @@ package ldjson
 import (
 	"encoding/json"
 	"testing"
+
+	kb "github.com/stephenfeagin/kitchenbox"
 )
 
-func TestAggregateRating(t *testing.T) {
+func TestUnmarshalAggregateRating(t *testing.T) {
 	var rawRatingBareNumbers json.RawMessage = []byte(`
-{
-	"@type": "AggregateRating",
-	"ratingValue": 4.25,
-	"ratingCount": 100,
-	"itemReviewed": "RecipeName",
-	"bestRating": 5,
-	"worstRating": 1
-}
-`)
+		{
+			"@type": "AggregateRating",
+			"ratingValue": 4.25,
+			"ratingCount": 100,
+			"itemReviewed": "RecipeName",
+			"bestRating": 5,
+			"worstRating": 1
+		}
+	`)
 
 	var rawRatingStringNumbers json.RawMessage = []byte(`
-{
-	"@type": "AggregateRating",
-	"ratingValue": "4.25",
-	"ratingCount": "100",
-	"itemReviewed": "RecipeName",
-	"bestRating": "5",
-	"worstRating": "1"
-}
-`)
+		{
+			"@type": "AggregateRating",
+			"ratingValue": "4.25",
+			"ratingCount": "100",
+			"itemReviewed": "RecipeName",
+			"bestRating": "5",
+			"worstRating": "1"
+		}
+	`)
 
-	var want = AggregateRating{
+	var rawRatingBlank json.RawMessage = []byte(`""`)
+
+	var want = kb.AggregateRating{
 		Type:         "AggregateRating",
 		RatingValue:  4.25,
 		RatingCount:  100,
@@ -36,18 +40,24 @@ func TestAggregateRating(t *testing.T) {
 		BestRating:   5,
 		WorstRating:  1,
 	}
-	tests := map[string]json.RawMessage{
-		"bareNumbers":   rawRatingBareNumbers,
-		"stringNumbers": rawRatingStringNumbers,
+
+	tests := []struct {
+		name  string
+		input json.RawMessage
+		want  kb.AggregateRating
+	}{
+		{"Bare Numbers", rawRatingBareNumbers, want},
+		{"String Numbers", rawRatingStringNumbers, want},
+		{"Blank", rawRatingBlank, kb.AggregateRating{}},
 	}
-	for name, input := range tests {
-		t.Run(name, func(t *testing.T) {
-			got, err := processAggregateRatingFromJSON(&input)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got, err := unmarshalAggregateRating(&test.input)
 			if err != nil {
 				t.Fatal(err)
 			}
-			if *got != want {
-				t.Fatal("incorrectly parsed aggregateRating")
+			if *got != test.want {
+				t.Fatal("incorrectly parsed AggregateRating")
 			}
 		})
 	}

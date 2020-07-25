@@ -3,9 +3,11 @@ package ldjson
 import (
 	"encoding/json"
 	"testing"
+
+	kb "github.com/stephenfeagin/kitchenbox"
 )
 
-func TestParseNutritionJSON(t *testing.T) {
+func TestUnmarshalNutrition(t *testing.T) {
 	var (
 		emptyString     json.RawMessage = []byte("")
 		emptyJSONObject json.RawMessage = []byte("{}")
@@ -29,8 +31,8 @@ func TestParseNutritionJSON(t *testing.T) {
     `)
 	)
 
-	emptyStruct := Nutrition{}
-	completeStruct := Nutrition{
+	emptyStruct := kb.Nutrition{}
+	completeStruct := kb.Nutrition{
 		Type:                  "NutritionInformation",
 		Calories:              "233 calories",
 		CarbohydrateContent:   "2.4 g",
@@ -48,7 +50,7 @@ func TestParseNutritionJSON(t *testing.T) {
 	tests := []struct {
 		name  string
 		input json.RawMessage
-		want  Nutrition
+		want  kb.Nutrition
 	}{
 		{"Empty String", emptyString, emptyStruct},
 		{"Empty JSON Object", emptyJSONObject, emptyStruct},
@@ -58,7 +60,7 @@ func TestParseNutritionJSON(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got, err := processNutritionFromJSON(&test.input)
+			got, err := unmarshalNutrition(&test.input)
 			if err != nil {
 				t.Fatal(err)
 			}

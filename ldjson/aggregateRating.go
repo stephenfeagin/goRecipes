@@ -1,21 +1,10 @@
-package json
+package ldjson
 
 import (
 	"encoding/json"
 	"errors"
 	"strconv"
 )
-
-// AggregateRating defines the data for a schema.org AggregateRating object. It only includes fields
-// that are commonly used in the schema.org Recipe object.
-type AggregateRating struct {
-	Type         string  `json:"@type"` // AggregateRating
-	RatingValue  float64 `json:"ratingValue"`
-	RatingCount  int     `json:"ratingCount"`
-	ItemReviewed string  `json:"itemReviewed"` // should match allRecipes.Name
-	BestRating   int     `json:"bestRating"`
-	WorstRating  int     `json:"worstRating"`
-}
 
 // rawAggregateRating is a more flexible representation of a schema.org AggregateRating object. It
 // allows for number fields to be in string form.
@@ -28,7 +17,7 @@ type rawAggregateRating struct {
 	WorstRating  *json.RawMessage `json:"worstRating"`
 }
 
-func processAggregateRatingFromJSON(raw *json.RawMessage) (*AggregateRating, error) {
+func unmarshalAggregateRating(raw *json.RawMessage) (*AggregateRating, error) {
 	// initialize a json.SyntaxError var for error checking
 	var syntaxError *json.SyntaxError
 

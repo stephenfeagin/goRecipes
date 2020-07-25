@@ -1,4 +1,4 @@
-package json
+package ldjson
 
 import (
 	"bytes"

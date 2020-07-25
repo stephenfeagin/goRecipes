@@ -1,20 +1,10 @@
-package json
+package ldjson
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 )
-
-// Image defines the data for a schema.org Image. It only includes fields that are frequently
-// included in Recipe models
-type Image struct {
-	Type    string `json:"@type"` // should be ImageObject
-	URL     string `json:"url"`
-	Width   string `json:"width"`
-	Height  string `json:"height"`
-	Caption string `json:"caption"`
-}
 
 // processRawImageFromJSON turns a *json.RawMessage into an Image struct. The RawMessage will either be a
 // plain URL string or an actual ImageObject JSON representation according to schema.org

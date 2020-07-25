@@ -1,6 +1,8 @@
-package json
+package ldjson
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // rawRecipe represents the data from a schema.org Recipe type. It allows many non-string fields to
 // be unmarshalled as json.RawMessage, which can then be further refined to create a fully-processed

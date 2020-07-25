@@ -28,7 +28,7 @@ func TestParseImageJSON(t *testing.T) {
 	}
 	for name, input := range tests {
 		t.Run(name, func(t *testing.T) {
-			got, err := unmarshalImage(&input)
+			got, err := unmarshalImage(input)
 			if err != nil {
 				t.Fatal(err)
 			}

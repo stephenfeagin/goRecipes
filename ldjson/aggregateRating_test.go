@@ -52,7 +52,7 @@ func TestUnmarshalAggregateRating(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got, err := unmarshalAggregateRating(&test.input)
+			got, err := unmarshalAggregateRating(test.input)
 			if err != nil {
 				t.Fatal(err)
 			}

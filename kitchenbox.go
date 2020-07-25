@@ -11,7 +11,7 @@ type Recipe struct {
 	Type               string
 	MainEntityOfPage   string
 	Name               string
-	Image              *Image
+	Image              Image
 	DatePublished      time.Time
 	Description        string
 	PrepTime           string
@@ -19,12 +19,12 @@ type Recipe struct {
 	TotalTime          string
 	RecipeYield        string
 	RecipeIngredient   []string
-	RecipeInstructions []*RecipeInstruction
+	RecipeInstructions []RecipeInstruction
 	RecipeCategory     []string
 	RecipeCuisine      []string
-	Author             *Author
-	AggregateRating    *AggregateRating
-	Nutrition          *Nutrition
+	Author             Author
+	AggregateRating    AggregateRating
+	Nutrition          Nutrition
 }
 
 // Nutrition defines the data for a schema.org NutritionInformation type

@@ -60,7 +60,7 @@ func TestUnmarshalNutrition(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got, err := unmarshalNutrition(&test.input)
+			got, err := unmarshalNutrition(test.input)
 			if err != nil {
 				t.Fatal(err)
 			}

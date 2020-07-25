@@ -2,6 +2,7 @@ package ldjson
 
 import (
 	"encoding/json"
+	"log"
 
 	kb "github.com/stephenfeagin/kitchenbox"
 )
@@ -16,26 +17,26 @@ type rawRecipe struct {
 	Name             string `json:"name"`
 
 	// may be a @type:ImageObject, may be just a URL
-	Image *json.RawMessage `json:"image"`
+	Image json.RawMessage `json:"image"`
 
 	// 2019-04-02T06:49:59.000Z -- may be incompatible with RFC3339 due to time/timezone
 	DatePublished string `json:"datePublished"`
 	Description   string `json:"description"`
 
 	// PT20M -- 20 minutes
-	PrepTime           string                  `json:"prepTime"`
-	CookTime           string                  `json:"cookTime"`
-	TotalTime          string                  `json:"totalTime"`
-	RecipeYield        string                  `json:"recipeYield"`
-	RecipeIngredient   []string                `json:"recipeIngredient"`
-	RecipeInstructions []*kb.RecipeInstruction `json:"recipeInstructions"`
+	PrepTime           string                 `json:"prepTime"`
+	CookTime           string                 `json:"cookTime"`
+	TotalTime          string                 `json:"totalTime"`
+	RecipeYield        string                 `json:"recipeYield"`
+	RecipeIngredient   []string               `json:"recipeIngredient"`
+	RecipeInstructions []kb.RecipeInstruction `json:"recipeInstructions"`
 
 	// RecipeCategory and RecipeCuisine may be a single string or a string array
-	RecipeCategory  *json.RawMessage `json:"recipeCategory"`
-	RecipeCuisine   *json.RawMessage `json:"recipeCuisine"`
-	Author          *kb.Author       `json:"author"`
-	AggregateRating *json.RawMessage `json:"aggregateRating"`
-	Nutrition       *json.RawMessage `json:"nutrition"`
+	RecipeCategory  json.RawMessage `json:"recipeCategory"`
+	RecipeCuisine   json.RawMessage `json:"recipeCuisine"`
+	Author          kb.Author       `json:"author"`
+	AggregateRating json.RawMessage `json:"aggregateRating"`
+	Nutrition       json.RawMessage `json:"nutrition"`
 }
 
 // processRecipe converts a partially-processed rawRecipe into a fully processed, usable kb.Recipe
@@ -59,9 +60,11 @@ func processRecipe(raw *rawRecipe) (*kb.Recipe, error) {
 	// unmarshal raw fields
 	img, err := unmarshalImage(raw.Image)
 	if err != nil {
+		log.Printf("%s\n", raw.Image)
+		log.Println(err)
 		return nil, err
 	}
-	rec.Image = img
+	rec.Image = *img
 
 	recipeCategory, err := unmarshalToStringSlice(raw.RecipeCategory)
 	if err != nil {
@@ -79,13 +82,13 @@ func processRecipe(raw *rawRecipe) (*kb.Recipe, error) {
 	if err != nil {
 		return nil, err
 	}
-	rec.AggregateRating = aggregateRating
+	rec.AggregateRating = *aggregateRating
 
 	nutrition, err := unmarshalNutrition(raw.Nutrition)
 	if err != nil {
 		return nil, err
 	}
-	rec.Nutrition = nutrition
+	rec.Nutrition = *nutrition
 
 	return rec, nil
 }

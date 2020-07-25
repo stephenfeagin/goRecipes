@@ -7,8 +7,8 @@ import (
 )
 
 // rawRecipe represents the data from a schema.org Recipe type. It allows many non-string fields to
-// be unmarshalled as json.RawMessage, which can then be further refined to create a fully-processed
-// Recipe struct
+// be unmarshalled as json.RawMessage, which can then be further refined to create a fully
+// processed Recipe struct
 type rawRecipe struct {
 	Context          string `json:"@context"`
 	Type             string `json:"@type"`
@@ -36,4 +36,56 @@ type rawRecipe struct {
 	Author          *kb.Author       `json:"author"`
 	AggregateRating *json.RawMessage `json:"aggregateRating"`
 	Nutrition       *json.RawMessage `json:"nutrition"`
+}
+
+// processRecipe converts a partially-processed rawRecipe into a fully processed, usable kb.Recipe
+func processRecipe(raw *rawRecipe) (*kb.Recipe, error) {
+	rec := &kb.Recipe{}
+
+	// Copy over the already processed fields
+	rec.Context = raw.Context
+	rec.Type = raw.Type
+	rec.MainEntityOfPage = raw.MainEntityOfPage
+	rec.Name = raw.Name
+	rec.Description = raw.Description
+	rec.PrepTime = raw.PrepTime
+	rec.CookTime = raw.CookTime
+	rec.TotalTime = raw.TotalTime
+	rec.RecipeYield = raw.RecipeYield
+	rec.RecipeIngredient = raw.RecipeIngredient[:]
+	rec.RecipeInstructions = raw.RecipeInstructions
+	rec.Author = raw.Author
+
+	// unmarshal raw fields
+	img, err := unmarshalImage(raw.Image)
+	if err != nil {
+		return nil, err
+	}
+	rec.Image = img
+
+	recipeCategory, err := unmarshalToStringSlice(raw.RecipeCategory)
+	if err != nil {
+		return nil, err
+	}
+	rec.RecipeCategory = recipeCategory
+
+	recipeCuisine, err := unmarshalToStringSlice(raw.RecipeCuisine)
+	if err != nil {
+		return nil, err
+	}
+	rec.RecipeCuisine = recipeCuisine
+
+	aggregateRating, err := unmarshalAggregateRating(raw.AggregateRating)
+	if err != nil {
+		return nil, err
+	}
+	rec.AggregateRating = aggregateRating
+
+	nutrition, err := unmarshalNutrition(raw.Nutrition)
+	if err != nil {
+		return nil, err
+	}
+	rec.Nutrition = nutrition
+
+	return rec, nil
 }

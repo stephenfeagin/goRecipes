@@ -1,4 +1,4 @@
-package main
+package ldjson
 
 import (
 	"bytes"
@@ -13,17 +13,14 @@ import (
 
 var schemaRegexp = regexp.MustCompile(`"@type"\s*:\s*"Recipe"`)
 
-// retrieveSchemaJSONSelection reads a goquery.Document from an io.Reader, traverses the document
-// tree and searches for a <script type="application/ld+json"> element that matches a regexp for a
-// schema.org Recipe. If it cannot parse a goquery.Document from the reader or if no nodes match
-// the search, it returns nil and an error. Otherwise it returns a *goquery.Selection and nil.
-func retrieveSchemaJSONSelection(r io.Reader) (*goquery.Selection, error) {
-	doc, err := goquery.NewDocumentFromReader(r)
-	if err != nil {
-		return nil, err
-	}
-
+// retrieveSelectionFromResponse traverses a goquery.Document
+// document tree and searches for a <script type="application/ld+json"> element that matches a
+// regexp for a schema.org Recipe. If it cannot parse a goquery.Document from the response, or if
+// no nodes match the search, it returns nil and an error. Otherwise it returns a
+// *goquery.Selection and nil.
+func retrieveSelection(doc *goquery.Document) (*goquery.Selection, error) {
 	var ldJSON *goquery.Selection
+
 	doc.Find(`script[type="application/ld+json"]`).EachWithBreak(
 		func(i int, s *goquery.Selection) bool {
 			if schemaRegexp.MatchString(s.Text()) {
@@ -39,10 +36,10 @@ func retrieveSchemaJSONSelection(r io.Reader) (*goquery.Selection, error) {
 	return ldJSON, nil
 }
 
-// checkSchemaJSON makes a copy of the input buffer, checks if the content of the input matches the
+// isValidSchema makes a copy of the input buffer, checks if the content of the input matches the
 // regex for a Schema.org Recipe JSON, then returns the result of the check and the copy of the
 // input io.Reader
-func checkSchemaJSON(r io.Reader) (bool, io.Reader) {
+func isValidSchema(r io.Reader) (bool, io.Reader) {
 	content, err := ioutil.ReadAll(r)
 	if err != nil {
 		return false, nil
@@ -53,7 +50,9 @@ func checkSchemaJSON(r io.Reader) (bool, io.Reader) {
 	return match, readerCopy
 }
 
-func extractRecipeFromSingleton(s *goquery.Selection) (*rawRecipe, error) {
+// extractFromSingleton produces a rawRecipe struct from a goquery.Selection that has only one
+// LD+JSON object
+func extractFromSingleton(s *goquery.Selection) (*rawRecipe, error) {
 	recipe := &rawRecipe{}
 	if err := json.Unmarshal([]byte(s.Text()), &recipe); err != nil {
 		return nil, err
@@ -61,9 +60,9 @@ func extractRecipeFromSingleton(s *goquery.Selection) (*rawRecipe, error) {
 	return recipe, nil
 }
 
-// extractRecipeJSONFromSlice converts the content of a goquery.Selection **that has already been validated
-// and contains the correct ld+json content** and returns a structured *Recipe
-func extractRecipeFromSlice(s *goquery.Selection) (*rawRecipe, error) {
+// extractFromSlice produces a rawRecipe struct from a goquery.Selection that has more than one
+// LD+JSON object
+func extractFromSlice(s *goquery.Selection) (*rawRecipe, error) {
 	// unmarshal the text into an empty interface
 	var jsonArray []interface{}
 
@@ -91,14 +90,16 @@ func extractRecipeFromSlice(s *goquery.Selection) (*rawRecipe, error) {
 	return recipeContainer, nil
 }
 
+// extractRecipe produces a rawRecipe struct from a goquery.Selection, trying both the
+// extractFromSingle and the extractFromSlice approaches
 func extractRecipe(s *goquery.Selection) (*rawRecipe, error) {
 	var recipe *rawRecipe
 	var err error
-	recipe, err = extractRecipeFromSingleton(s)
+	recipe, err = extractFromSingleton(s)
 	if err == nil {
 		return recipe, nil
 	}
-	recipe, err = extractRecipeFromSlice(s)
+	recipe, err = extractFromSlice(s)
 	if err == nil {
 		return recipe, nil
 	}

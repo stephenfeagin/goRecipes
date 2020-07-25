@@ -1,4 +1,4 @@
-module github.com/stephenfeagin/goRecipes
+module github.com/stephenfeagin/kitchenbox
 
 go 1.14
 

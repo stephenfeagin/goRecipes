@@ -1,9 +1,10 @@
-package main
+package ldjson
 
 import (
 	"encoding/json"
-	"reflect"
 	"testing"
+
+	kb "github.com/stephenfeagin/kitchenbox"
 )
 
 func TestParseImageJSON(t *testing.T) {
@@ -17,7 +18,7 @@ func TestParseImageJSON(t *testing.T) {
                         "caption": null
 		}
 	`)
-	want := image{
+	want := kb.Image{
 		Type: "ImageObject",
 		URL:  "https://blah.com/img.jpeg",
 	}
@@ -27,11 +28,11 @@ func TestParseImageJSON(t *testing.T) {
 	}
 	for name, input := range tests {
 		t.Run(name, func(t *testing.T) {
-			got, err := processRawImageFromJSON(&input)
+			got, err := unmarshalImage(&input)
 			if err != nil {
 				t.Fatal(err)
 			}
-			if !reflect.DeepEqual(*got, want) {
+			if *got != want {
 				t.Fatal("incorrectly processed Image")
 			}
 		})

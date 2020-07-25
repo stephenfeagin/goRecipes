@@ -1,17 +1,21 @@
-package main
+package ldjson
 
 import (
 	"encoding/json"
 	"errors"
 	"strconv"
+
+	kb "github.com/stephenfeagin/kitchenbox"
 )
 
-func processAggregateRatingFromJSON(raw *json.RawMessage) (*aggregateRating, error) {
+// unmarshalAggregateRating returns a *kb.AggregateRating from a *json.RawMessage, allowing for
+// more flexible unmarshalling depending on the types used in the input JSON
+func unmarshalAggregateRating(raw *json.RawMessage) (*kb.AggregateRating, error) {
 	// initialize a json.SyntaxError var for error checking
 	var syntaxError *json.SyntaxError
 
-	agr := &aggregateRating{}
-	// Try to unmarshal into an aggregateRating struct
+	agr := &kb.AggregateRating{}
+	// Try to unmarshal into an aggregateRating struct. If successful, return
 	if err := json.Unmarshal(*raw, agr); err == nil {
 		return agr, nil
 	} else if errors.Is(err, syntaxError) {
@@ -19,11 +23,24 @@ func processAggregateRatingFromJSON(raw *json.RawMessage) (*aggregateRating, err
 		return nil, err
 	}
 
-	// If unsuccessful, unmarshal into rawAggregateRating
-	rawAgr := &rawAggregateRating{}
-	if err := json.Unmarshal(*raw, rawAgr); err != nil {
+	// If unsuccessful, unmarshal into an empty raw aggregate rating struct
+	rawAgr := &struct {
+		Type         string           `json:"@type"`
+		RatingValue  *json.RawMessage `json:"ratingValue"`
+		RatingCount  *json.RawMessage `json:"ratingCount"`
+		ItemReviewed string           `json:"itemReviewed"`
+		BestRating   *json.RawMessage `json:"bestRating"`
+		WorstRating  *json.RawMessage `json:"worstRating"`
+	}{}
+
+	// If unable to unmarshal into rawAgr, return SyntaxError if applicable, or else return the
+	// empty struct (indicating empty input)
+	if err := json.Unmarshal(*raw, rawAgr); errors.Is(err, syntaxError) {
 		return nil, err
+	} else if err != nil {
+		return agr, nil
 	}
+
 	// Then parse the various strings into the result aggregateRating struct
 	// First, copy over the existing string fields
 	agr.Type, agr.ItemReviewed = rawAgr.Type, rawAgr.ItemReviewed

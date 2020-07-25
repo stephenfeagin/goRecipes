@@ -1,4 +1,4 @@
-package main
+package ldjson
 
 import (
 	"testing"
@@ -15,14 +15,14 @@ func TestParseDatePublishedJSON(t *testing.T) {
 
 		{"Full Datetime", "2019-04-02T00:00:00.000Z", want},
 		{"Date Only", "2019-04-02", want},
-		{"Invalid Input", "xxx", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)},
+		{"Invalid Input", "xxx", time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			datePublished, _ := parseDatePublishedFromJSON(test.input)
+			datePublished, _ := unmarshalDatePublished(test.input)
 			if datePublished != test.want {
-				t.Fatal("incorrectly parsed DatePublished")
+				t.Fatal("incorrectly unmarshalled DatePublished")
 			}
 		})
 	}

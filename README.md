@@ -1,6 +1,6 @@
 ![Go](https://github.com/stephenfeagin/goRecipes/workflows/Go/badge.svg)
 
-# goRecipes
+# kitchenbox
 
 This WIP application aims to eventually parse, store, organize, display, and export recipes.
 

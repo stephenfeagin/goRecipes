@@ -22,6 +22,7 @@ func unmarshalAggregateRating(raw json.RawMessage) (*kb.AggregateRating, error) 
 		return agr, nil
 	} else if errors.Is(err, syntaxError) {
 		// If there's a JSON syntax error, there's nothing we can do
+		log.Printf("aggregateRating: %v\n", err)
 		return nil, err
 	}
 
@@ -37,11 +38,11 @@ func unmarshalAggregateRating(raw json.RawMessage) (*kb.AggregateRating, error) 
 
 	// If unable to unmarshal into rawAgr, return SyntaxError if applicable, or else return the
 	// empty struct (indicating empty input)
-	if err = json.Unmarshal(raw, rawAgr); errors.Is(err, syntaxError) {
-		return nil, err
-	} else if err != nil {
-		log.Printf("rawAgr unmarshal: %v\n", err)
-		return agr, err
+	if err = json.Unmarshal(raw, rawAgr); err != nil {
+		if errors.Is(err, syntaxError) {
+			return nil, err
+		}
+		return &kb.AggregateRating{}, err
 	}
 
 	// Then parse the various strings into the result aggregateRating struct
@@ -71,57 +72,64 @@ func unmarshalAggregateRating(raw json.RawMessage) (*kb.AggregateRating, error) 
 
 	// RatingCount -- int
 	var countInt int
-	err = json.Unmarshal(rawAgr.RatingCount, &countInt)
-	if err != nil {
-		if errors.Is(err, syntaxError) {
-			return nil, err
-		}
-		var countString string
-		err = json.Unmarshal(rawAgr.RatingCount, &countString)
+	if rawAgr.RatingCount != nil {
+		err = json.Unmarshal(rawAgr.RatingCount, &countInt)
 		if err != nil {
-			return nil, err
-		}
-		countInt, err = strconv.Atoi(countString)
-		if err != nil {
-			return nil, err
+			if errors.Is(err, syntaxError) {
+				return nil, err
+			}
+			var countString string
+			err = json.Unmarshal(rawAgr.RatingCount, &countString)
+			if err != nil {
+				return nil, err
+			}
+			countInt, err = strconv.Atoi(countString)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	agr.RatingCount = countInt
 
 	// BestRating -- int
 	var brInt int
-	err = json.Unmarshal(rawAgr.BestRating, &brInt)
-	if err != nil {
-		if errors.Is(err, syntaxError) {
-			return nil, err
-		}
-		var brString string
-		err = json.Unmarshal(rawAgr.BestRating, &brString)
+	if rawAgr.BestRating != nil {
+		err = json.Unmarshal(rawAgr.BestRating, &brInt)
 		if err != nil {
-			return nil, err
-		}
-		brInt, err = strconv.Atoi(brString)
-		if err != nil {
-			return nil, err
+			if errors.Is(err, syntaxError) {
+				return nil, err
+			}
+			var brString string
+			err = json.Unmarshal(rawAgr.BestRating, &brString)
+			if err != nil {
+				return nil, err
+			}
+			brInt, err = strconv.Atoi(brString)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	agr.BestRating = brInt
 
 	// WorstRating -- int
 	var wrInt int
-	err = json.Unmarshal(rawAgr.WorstRating, &wrInt)
-	if err != nil {
-		if errors.Is(err, syntaxError) {
-			return nil, err
-		}
-		var wrString string
-		err = json.Unmarshal(rawAgr.WorstRating, &wrString)
+	if rawAgr.WorstRating != nil {
+		err = json.Unmarshal(rawAgr.WorstRating, &wrInt)
 		if err != nil {
-			return nil, err
-		}
-		wrInt, err = strconv.Atoi(wrString)
-		if err != nil {
-			return nil, err
+			if errors.Is(err, syntaxError) {
+				return nil, err
+			}
+			var wrString string
+			err = json.Unmarshal(rawAgr.WorstRating, &wrString)
+			if err != nil {
+				log.Printf("wrInt: %v\n", err)
+				return nil, err
+			}
+			wrInt, err = strconv.Atoi(wrString)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	agr.WorstRating = wrInt

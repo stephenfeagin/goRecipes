@@ -3,7 +3,6 @@ package ldjson
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 
 	kb "github.com/stephenfeagin/kitchenbox"
@@ -24,13 +23,9 @@ func unmarshalImage(raw json.RawMessage) (*kb.Image, error) {
 		return nil, err
 	}
 
-	// If that didn't work, then unmarshal into an empty interface
-	var imgInterface interface{}
-	json.Unmarshal(raw, &imgInterface)
-	// type assert into string
-	imgString, ok := imgInterface.(string)
-	if !ok {
-		return nil, fmt.Errorf("image: couldn't assert into string")
+	var imgString string
+	if err := json.Unmarshal(raw, &imgString); err != nil {
+		return nil, err
 	}
 	img.Type = "ImageObject"
 	img.URL = imgString

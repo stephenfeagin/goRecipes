@@ -118,13 +118,13 @@ func RetrieveRecipe(doc *goquery.Document) (*kb.Recipe, error) {
 			break
 		}
 		log.Println(err)
-		return recipe, fmt.Errorf("extractReipce: could not unmarshal JSON into *kb.Recipe")
+		return recipe, fmt.Errorf("RetrieveRecipce: could not unmarshal JSON into *kb.Recipe")
 	}
 
 	recipe, err = processRecipe(raw)
 	if err != nil {
 		log.Println(err)
-		return nil, fmt.Errorf("RetrieveRecipe: could not unmarshal JSON into a Recipe struct")
+		return nil, fmt.Errorf("RetrieveRecipe: could not unmarshal JSON into a *kb.Recipe")
 	}
 	return recipe, nil
 }

@@ -30,8 +30,6 @@ func TestUnmarshalAggregateRating(t *testing.T) {
 		}
 	`)
 
-	var rawRatingBlank json.RawMessage = []byte(`""`)
-
 	var want = kb.AggregateRating{
 		Type:         "AggregateRating",
 		RatingValue:  4.25,
@@ -48,7 +46,6 @@ func TestUnmarshalAggregateRating(t *testing.T) {
 	}{
 		{"Bare Numbers", rawRatingBareNumbers, want},
 		{"String Numbers", rawRatingStringNumbers, want},
-		{"Blank", rawRatingBlank, kb.AggregateRating{}},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

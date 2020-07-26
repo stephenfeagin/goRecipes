@@ -2,7 +2,6 @@ package ldjson
 
 import (
 	"encoding/json"
-	"log"
 
 	kb "github.com/stephenfeagin/kitchenbox"
 )
@@ -60,35 +59,38 @@ func processRecipe(raw *rawRecipe) (*kb.Recipe, error) {
 	// unmarshal raw fields
 	img, err := unmarshalImage(raw.Image)
 	if err != nil {
-		log.Printf("%s\n", raw.Image)
-		log.Println(err)
-		return nil, err
+		rec.Image = kb.Image{}
+	} else {
+		rec.Image = *img
 	}
-	rec.Image = *img
 
 	recipeCategory, err := unmarshalToStringSlice(raw.RecipeCategory)
 	if err != nil {
-		return nil, err
+		rec.RecipeCategory = nil
+	} else {
+		rec.RecipeCategory = recipeCategory
 	}
-	rec.RecipeCategory = recipeCategory
 
 	recipeCuisine, err := unmarshalToStringSlice(raw.RecipeCuisine)
 	if err != nil {
-		return nil, err
+		rec.RecipeCuisine = nil
+	} else {
+		rec.RecipeCuisine = recipeCuisine
 	}
-	rec.RecipeCuisine = recipeCuisine
 
 	aggregateRating, err := unmarshalAggregateRating(raw.AggregateRating)
 	if err != nil {
-		return nil, err
+		rec.AggregateRating = kb.AggregateRating{}
+	} else {
+		rec.AggregateRating = *aggregateRating
 	}
-	rec.AggregateRating = *aggregateRating
 
 	nutrition, err := unmarshalNutrition(raw.Nutrition)
 	if err != nil {
-		return nil, err
+		rec.Nutrition = kb.Nutrition{}
+	} else {
+		rec.Nutrition = *nutrition
 	}
-	rec.Nutrition = *nutrition
 
 	return rec, nil
 }

@@ -14,8 +14,11 @@ func unmarshalNutrition(raw json.RawMessage) (*kb.Nutrition, error) {
 	// Try to unmarshal into a kb.Nutrition struct. If not possible, assume that the input JSON
 	// is empty, and return an empty kb.Nutrition struct.
 	nut := &kb.Nutrition{}
-	if err := json.Unmarshal(raw, nut); errors.Is(err, syntaxError) {
-		return nil, err
+	if err := json.Unmarshal(raw, nut); err != nil {
+		if errors.Is(err, syntaxError) {
+			return nil, err
+		}
+		return &kb.Nutrition{}, nil
 	}
 
 	return nut, nil

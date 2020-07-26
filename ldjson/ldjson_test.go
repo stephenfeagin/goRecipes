@@ -1,6 +1,7 @@
 package ldjson
 
 import (
+	"log"
 	"os"
 	"testing"
 
@@ -14,6 +15,10 @@ var testInputFiles = map[string]string{
 	"Serious Eats":    "testdata/seriouseats-margarita.html",
 	"Cookie and Kate": "testdata/cookieandkate-marinated-chickpeas.html",
 	"Kitchn":          "testdata/kitchn-strawberry-shortcake.html",
+}
+
+func init() {
+	log.SetFlags(log.Lshortfile)
 }
 
 func TestRetrieveSelection(t *testing.T) {
@@ -37,7 +42,7 @@ func TestRetrieveSelection(t *testing.T) {
 	}
 }
 
-func TestExtractRecipe(t *testing.T) {
+func TestRetrieveRecipe(t *testing.T) {
 	for name, input := range testInputFiles {
 		t.Run(name, func(t *testing.T) {
 
@@ -52,12 +57,7 @@ func TestExtractRecipe(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			ldJSON, err := retrieveSelection(doc)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if _, err = extractRecipe(ldJSON); err != nil {
+			if _, err = RetrieveRecipe(doc); err != nil {
 				t.Fatal(err)
 			}
 		})
@@ -78,11 +78,7 @@ func BenchmarkExtractRecipe(b *testing.B) {
 				b.Fatal(err)
 			}
 
-			ldJSON, err := retrieveSelection(doc)
-			if err != nil {
-				b.Fatal(err)
-			}
-			if _, err := extractRecipe(ldJSON); err != nil {
+			if _, err := RetrieveRecipe(doc); err != nil {
 				b.Fatal(err)
 			}
 		})

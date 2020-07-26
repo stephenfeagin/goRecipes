@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"regexp"
 
 	"github.com/PuerkitoBio/goquery"
+	kb "github.com/stephenfeagin/kitchenbox"
 )
 
 var schemaRegexp = regexp.MustCompile(`"@type"\s*:\s*"Recipe"`)
@@ -70,6 +72,11 @@ func extractFromSlice(s *goquery.Selection) (*rawRecipe, error) {
 		return nil, err
 	}
 
+	/*
+		THIS IS A MAJOR ISSUE
+		I NEED TO CHECK IF THE VALUE IN THE ARRAY IS ACTUALLY OF TYPE RECIPE AND NOT SOME OTHER
+		SCHEMA OBJECT
+	*/
 	recipeContainer := &rawRecipe{}
 	for _, i := range jsonArray {
 		// try to unmarshal into a Recipe struct
@@ -77,31 +84,47 @@ func extractFromSlice(s *goquery.Selection) (*rawRecipe, error) {
 		if err != nil {
 			return nil, err
 		}
-		if err = json.Unmarshal(obj, &recipeContainer); err != nil {
+		err = json.Unmarshal(obj, &recipeContainer)
+		if err != nil || recipeContainer.Type != "Recipe" {
 			continue
 		} else {
 			break
 		}
 	}
-	if recipeContainer == nil {
+	if recipeContainer.Type == "" {
 		return nil, fmt.Errorf("couldn't parse JSON")
 	}
 
 	return recipeContainer, nil
 }
 
-// extractRecipe produces a rawRecipe struct from a goquery.Selection, trying both the
+// RetrieveRecipe produces a rawRecipe struct from a goquery.Selection, trying both the
 // extractFromSingle and the extractFromSlice approaches
-func extractRecipe(s *goquery.Selection) (*rawRecipe, error) {
-	var recipe *rawRecipe
+func RetrieveRecipe(doc *goquery.Document) (*kb.Recipe, error) {
+	var raw *rawRecipe
+	var recipe *kb.Recipe
 	var err error
-	recipe, err = extractFromSingleton(s)
-	if err == nil {
+	selection, err := retrieveSelection(doc)
+	if err != nil {
 		return recipe, nil
 	}
-	recipe, err = extractFromSlice(s)
-	if err == nil {
-		return recipe, nil
+	for {
+		raw, err = extractFromSingleton(selection)
+		if err == nil {
+			break
+		}
+		raw, err = extractFromSlice(selection)
+		if err == nil {
+			break
+		}
+		log.Println(err)
+		return recipe, fmt.Errorf("RetrieveRecipce: could not unmarshal JSON into *kb.Recipe")
 	}
-	return nil, fmt.Errorf("extractRecipe: could not unmarshal JSON into a Recipe struct")
+
+	recipe, err = processRecipe(raw)
+	if err != nil {
+		log.Println(err)
+		return nil, fmt.Errorf("RetrieveRecipe: could not unmarshal JSON into a *kb.Recipe")
+	}
+	return recipe, nil
 }

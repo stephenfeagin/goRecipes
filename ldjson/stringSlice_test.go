@@ -24,7 +24,7 @@ func TestUnmarshalToStringSlice(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got, err := unmarshalToStringSlice(&test.input)
+			got, err := unmarshalToStringSlice(test.input)
 			if err != nil {
 				t.Fatal(err)
 			}

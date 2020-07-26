@@ -7,24 +7,24 @@ import (
 // Recipe defines the data for a schema.org Recipe. It only includes fields that are commonly used
 // in recipe pages.
 type Recipe struct {
-	Context            string
-	Type               string
-	MainEntityOfPage   string
-	Name               string
-	Image              Image
-	DatePublished      time.Time
-	Description        string
-	PrepTime           string
-	CookTime           string
-	TotalTime          string
-	RecipeYield        string
-	RecipeIngredient   []string
-	RecipeInstructions []RecipeInstruction
-	RecipeCategory     []string
-	RecipeCuisine      []string
-	Author             Author
-	AggregateRating    AggregateRating
-	Nutrition          Nutrition
+	Context            string              `json:"context"`
+	Type               string              `json:"@type"`
+	MainEntityOfPage   string              `json:"mainEntityOfPage"`
+	Name               string              `json:"name"`
+	Image              Image               `json:"image"`
+	DatePublished      time.Time           `json:"datePublished"`
+	Description        string              `json:"description"`
+	PrepTime           string              `json:"prepTime"`
+	CookTime           string              `json:"cookTime"`
+	TotalTime          string              `json:"totalTime"`
+	RecipeYield        string              `json:"recipeYield"`
+	RecipeIngredient   []string            `json:"recipeIngredient"`
+	RecipeInstructions []RecipeInstruction `json:"recipeInstruction"`
+	RecipeCategory     []string            `json:"recipeCategory"`
+	RecipeCuisine      []string            `json:"recipeCuisine"`
+	Author             Author              `json:"author"`
+	AggregateRating    AggregateRating     `json:"aggregateRating"`
+	Nutrition          Nutrition           `json:"nutrition"`
 }
 
 // Nutrition defines the data for a schema.org NutritionInformation type
